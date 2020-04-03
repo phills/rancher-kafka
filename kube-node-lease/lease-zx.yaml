@@ -12,4 +12,4 @@ metadata:
 spec:
   holderIdentity: zx
   leaseDurationSeconds: 40
-  renewTime: "2020-04-03T02:05:20.002373Z"
+  renewTime: "2020-04-03T02:05:30.004660Z"
