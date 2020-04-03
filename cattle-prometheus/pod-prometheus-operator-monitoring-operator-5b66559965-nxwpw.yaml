@@ -1,0 +1,81 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: "2020-04-02T05:58:47Z"
+  generateName: prometheus-operator-monitoring-operator-5b66559965-
+  labels:
+    app: prometheus-operator
+    chart: prometheus-operator-0.0.2
+    pod-template-hash: 5b66559965
+    release: monitoring-operator
+  name: prometheus-operator-monitoring-operator-5b66559965-nxwpw
+  namespace: cattle-prometheus
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: prometheus-operator-monitoring-operator-5b66559965
+    uid: a7580de9-ca84-440e-8dee-944ce6cdce86
+spec:
+  containers:
+  - args:
+    - --kubelet-service=cattle-prometheus/expose-kubelets-metrics
+    - --log-format=logfmt
+    - --log-level=info
+    - --prometheus-config-reloader=rancher/coreos-prometheus-config-reloader:v0.32.0
+    - --config-reloader-image=rancher/coreos-configmap-reload:v0.0.1
+    - --labels=monitoring.coreos.com=true
+    - --crd-apigroup=monitoring.coreos.com
+    - --manage-crds=false
+    - --with-validation=true
+    image: rancher/coreos-prometheus-operator:v0.32.0
+    imagePullPolicy: IfNotPresent
+    name: prometheus-operator
+    ports:
+    - containerPort: 8080
+      name: http
+      protocol: TCP
+    resources:
+      limits:
+        cpu: 200m
+        memory: 500Mi
+      requests:
+        cpu: 100m
+        memory: 50Mi
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: prometheus-operator-monitoring-operator-token-fn7rr
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  nodeName: zx
+  nodeSelector:
+    kubernetes.io/os: linux
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: prometheus-operator-monitoring-operator
+  serviceAccountName: prometheus-operator-monitoring-operator
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoSchedule
+    key: cattle.io/os
+    operator: Equal
+    value: linux
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  volumes:
+  - name: prometheus-operator-monitoring-operator-token-fn7rr
+    secret:
+      defaultMode: 420
+      secretName: prometheus-operator-monitoring-operator-token-fn7rr

@@ -1,0 +1,15 @@
+apiVersion: coordination.k8s.io/v1beta1
+kind: Lease
+metadata:
+  creationTimestamp: "2020-04-02T04:33:37Z"
+  name: zx
+  namespace: kube-node-lease
+  ownerReferences:
+  - apiVersion: v1
+    kind: Node
+    name: zx
+    uid: 431de924-dbfc-4d1f-8131-0c2122309cfe
+spec:
+  holderIdentity: zx
+  leaseDurationSeconds: 40
+  renewTime: "2020-04-03T01:43:48.800139Z"

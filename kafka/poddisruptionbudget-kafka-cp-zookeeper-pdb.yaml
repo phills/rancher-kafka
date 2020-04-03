@@ -1,0 +1,18 @@
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  creationTimestamp: "2020-04-03T00:47:25Z"
+  labels:
+    app: cp-zookeeper
+    chart: cp-zookeeper-0.1.0
+    heritage: Tiller
+    io.cattle.field/appId: kafka
+    release: kafka
+  name: kafka-cp-zookeeper-pdb
+  namespace: kafka
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: cp-zookeeper
+      release: kafka

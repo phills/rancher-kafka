@@ -1,0 +1,80 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    cattle.io/timestamp: "2020-04-03T01:06:10Z"
+    field.cattle.io/ports: '[[{"containerPort":9021,"dnsName":"kafka-cp-control-center","kind":"ClusterIP","name":"cc-http","protocol":"TCP"}]]'
+    field.cattle.io/publicEndpoints: '[{"addresses":["192.168.4.1"],"allNodes":true,"port":31000,"protocol":"TCP","serviceId":"kafka:kafka-cp-control-center"}]'
+    prometheus.io/port: "5556"
+    prometheus.io/scrape: "true"
+  creationTimestamp: "2020-04-03T01:06:10Z"
+  generateName: kafka-cp-control-center-8665bcf877-
+  labels:
+    app: cp-control-center
+    pod-template-hash: 8665bcf877
+    release: kafka
+  name: kafka-cp-control-center-8665bcf877-5shzj
+  namespace: kafka
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: kafka-cp-control-center-8665bcf877
+    uid: e75623ac-e30b-40b2-99af-ccbf1a36f654
+spec:
+  containers:
+  - env:
+    - name: CONTROL_CENTER_BOOTSTRAP_SERVERS
+      value: PLAINTEXT://kafka-cp-kafka-headless:9092
+    - name: CONTROL_CENTER_CONNECT_CLUSTER
+      value: http://kafka-cp-kafka-connect:8083
+    - name: CONTROL_CENTER_KSQL_ADVERTISED_URL
+      value: http://kafka-cp-ksql-server:8088
+    - name: CONTROL_CENTER_KSQL_URL
+      value: http://kafka-cp-ksql-server:8088
+    - name: CONTROL_CENTER_REPLICATION_FACTOR
+      value: "3"
+    - name: CONTROL_CENTER_SCHEMA_REGISTRY_URL
+      value: http://kafka-cp-schema-registry:8081
+    - name: CONTROL_CENTER_ZOOKEEPER_CONNECT
+    - name: KAFKA_HEAP_OPTS
+      value: -Xms512M -Xmx512M
+    image: confluentinc/cp-enterprise-control-center:latest
+    imagePullPolicy: IfNotPresent
+    name: cp-control-center
+    ports:
+    - containerPort: 9021
+      name: cc-http
+      protocol: TCP
+    resources: {}
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: default-token-z6dxk
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  nodeName: zx
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: default
+  serviceAccountName: default
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  volumes:
+  - name: default-token-z6dxk
+    secret:
+      defaultMode: 420
+      secretName: default-token-z6dxk

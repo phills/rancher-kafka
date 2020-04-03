@@ -1,0 +1,8 @@
+apiVersion: v1
+data:
+  linear: '{"coresPerReplica":128,"min":1,"nodesPerReplica":4,"preventSinglePointFailure":true}'
+kind: ConfigMap
+metadata:
+  creationTimestamp: "2020-04-02T04:33:45Z"
+  name: coredns-autoscaler
+  namespace: kube-system

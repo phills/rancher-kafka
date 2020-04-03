@@ -1,0 +1,20 @@
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  annotations:
+    authz.cluster.auth.io/project-namespaces: p-5nh7p-namespaces-edit
+  creationTimestamp: "2020-04-02T04:34:05Z"
+  labels:
+    cattle.io/creator: norman
+  name: p-5nh7p-namespaces-edit
+rules:
+- apiGroups:
+  - ""
+  resourceNames:
+  - default
+  - kafka
+  - katafygio
+  resources:
+  - namespaces
+  verbs:
+  - '*'

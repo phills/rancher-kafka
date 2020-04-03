@@ -1,0 +1,111 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    cattle.io/timestamp: "2020-04-03T00:52:56Z"
+    field.cattle.io/ports: '[[{"containerPort":5556,"dnsName":"kafka-cp-ksql-server","hostPort":0,"kind":"ClusterIP","name":"5556tcp02","protocol":"TCP","sourcePort":0}],[{"containerPort":8088,"dnsName":"kafka-cp-ksql-server","hostPort":0,"kind":"ClusterIP","name":"server","protocol":"TCP","sourcePort":0},{"containerPort":5555,"dnsName":"kafka-cp-ksql-server","hostPort":0,"kind":"ClusterIP","name":"jmx","protocol":"TCP","sourcePort":0}]]'
+    prometheus.io/port: "5556"
+    prometheus.io/scrape: "true"
+  creationTimestamp: "2020-04-03T00:52:56Z"
+  generateName: kafka-cp-ksql-server-8df4c5975-
+  labels:
+    app: cp-ksql-server
+    pod-template-hash: 8df4c5975
+    release: kafka
+  name: kafka-cp-ksql-server-8df4c5975-8kkxc
+  namespace: kafka
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: kafka-cp-ksql-server-8df4c5975
+    uid: 0e612588-b855-49f2-a6f1-d3acad78fcb1
+spec:
+  containers:
+  - command:
+    - java
+    - -XX:+UnlockExperimentalVMOptions
+    - -XX:+UseCGroupMemoryLimitForHeap
+    - -XX:MaxRAMFraction=1
+    - -XshowSettings:vm
+    - -jar
+    - jmx_prometheus_httpserver.jar
+    - "5556"
+    - /etc/jmx-ksql-server/jmx-ksql-server-prometheus.yml
+    image: solsson/kafka-prometheus-jmx-exporter@sha256:6f82e2b0464f50da8104acd7363fb9b995001ddff77d248379f8788e78946143
+    imagePullPolicy: IfNotPresent
+    name: prometheus-jmx-exporter
+    ports:
+    - containerPort: 5556
+      name: 5556tcp02
+      protocol: TCP
+    resources: {}
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /etc/jmx-ksql-server
+      name: jmx-config
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: default-token-z6dxk
+      readOnly: true
+  - env:
+    - name: KSQL_BOOTSTRAP_SERVERS
+      value: PLAINTEXT://kafka-cp-kafka-headless:9092
+    - name: KSQL_HEAP_OPTS
+      value: -Xms512M -Xmx512M
+    - name: KSQL_JMX_PORT
+      value: "5555"
+    - name: KSQL_KSQL_SCHEMA_REGISTRY_URL
+      value: http://kafka-cp-schema-registry:8081
+    - name: KSQL_KSQL_SERVICE_ID
+      value: kafka
+    - name: KSQL_LISTENERS
+      value: http://0.0.0.0:8088
+    image: confluentinc/ksqldb-server:latest
+    imagePullPolicy: IfNotPresent
+    name: cp-ksql-server
+    ports:
+    - containerPort: 8088
+      name: server
+      protocol: TCP
+    - containerPort: 5555
+      name: jmx
+      protocol: TCP
+    resources: {}
+    securityContext:
+      capabilities: {}
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: default-token-z6dxk
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  nodeName: zx
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: default
+  serviceAccountName: default
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  volumes:
+  - configMap:
+      defaultMode: 420
+      name: kafka-cp-ksql-server-jmx-configmap
+    name: jmx-config
+  - name: default-token-z6dxk
+    secret:
+      defaultMode: 420
+      secretName: default-token-z6dxk

@@ -1,0 +1,19 @@
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  creationTimestamp: "2020-04-02T05:58:47Z"
+  labels:
+    app: operator-init
+    chart: operator-init-0.1.0
+    heritage: Tiller
+    io.cattle.field/appId: monitoring-operator
+    release: monitoring-operator
+  name: operator-init-monitoring-operator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: operator-init-monitoring-operator
+subjects:
+- kind: ServiceAccount
+  name: operator-init-monitoring-operator
+  namespace: cattle-prometheus

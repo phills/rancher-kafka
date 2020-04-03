@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: "2020-04-02T05:58:50Z"
+  labels:
+    app: exporter-kube-controller-manager
+    chart: exporter-kube-controller-manager-0.0.1
+    heritage: Tiller
+    io.cattle.field/appId: cluster-monitoring
+    k8s-app: kube-controller-manager
+    release: cluster-monitoring
+  name: expose-kube-cm-metrics
+  namespace: cattle-prometheus
+spec:
+  clusterIP: None
+  ports:
+  - name: metrics
+    port: 10252
+    protocol: TCP
+    targetPort: 10252
+  sessionAffinity: None
+  type: ClusterIP

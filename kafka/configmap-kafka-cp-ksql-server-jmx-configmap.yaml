@@ -1,0 +1,21 @@
+apiVersion: v1
+data:
+  jmx-ksql-server-prometheus.yml: |
+    jmxUrl: service:jmx:rmi:///jndi/rmi://localhost:5555/jmxrmi
+    lowercaseOutputName: true
+    lowercaseOutputLabelNames: true
+    ssl: false
+    rules:
+    - pattern : 'io.confluent.ksql.metrics<type=ksql-engine-query-stats>([^:]+):'
+      name: "cp_ksql_server_metrics_$1"
+kind: ConfigMap
+metadata:
+  creationTimestamp: "2020-04-03T00:47:25Z"
+  labels:
+    app: cp-ksql-server
+    chart: cp-ksql-server-0.1.0
+    heritage: Tiller
+    io.cattle.field/appId: kafka
+    release: kafka
+  name: kafka-cp-ksql-server-jmx-configmap
+  namespace: kafka

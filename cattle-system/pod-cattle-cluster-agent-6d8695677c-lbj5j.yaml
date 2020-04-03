@@ -1,0 +1,88 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: "2020-04-02T04:34:06Z"
+  generateName: cattle-cluster-agent-6d8695677c-
+  labels:
+    app: cattle-cluster-agent
+    pod-template-hash: 6d8695677c
+  name: cattle-cluster-agent-6d8695677c-lbj5j
+  namespace: cattle-system
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: cattle-cluster-agent-6d8695677c
+    uid: 512dae8e-2129-4174-9dc7-a172b44d81fb
+spec:
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - preference:
+          matchExpressions:
+          - key: node-role.kubernetes.io/controlplane
+            operator: In
+            values:
+            - "true"
+        weight: 100
+      - preference:
+          matchExpressions:
+          - key: node-role.kubernetes.io/etcd
+            operator: In
+            values:
+            - "true"
+        weight: 1
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: beta.kubernetes.io/os
+            operator: NotIn
+            values:
+            - windows
+  containers:
+  - env:
+    - name: CATTLE_FEATURES
+      value: dashboard=true
+    - name: CATTLE_SERVER
+      value: https://192.168.4.1:444
+    - name: CATTLE_CA_CHECKSUM
+      value: c54fa59dafbadb2890e635b8ad1c5529f84ea596c459568ceffbeba3543895e8
+    - name: CATTLE_CLUSTER
+      value: "true"
+    - name: CATTLE_K8S_MANAGED
+      value: "true"
+    image: rancher/rancher-agent:v2.4.2
+    imagePullPolicy: IfNotPresent
+    name: cluster-register
+    resources: {}
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /cattle-credentials
+      name: cattle-credentials
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: cattle-token-n9x59
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  nodeName: zx
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: cattle
+  serviceAccountName: cattle
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - operator: Exists
+  volumes:
+  - name: cattle-credentials
+    secret:
+      defaultMode: 320
+      secretName: cattle-credentials-8e27dab
+  - name: cattle-token-n9x59
+    secret:
+      defaultMode: 420
+      secretName: cattle-token-n9x59

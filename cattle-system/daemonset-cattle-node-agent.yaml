@@ -1,0 +1,102 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  annotations:
+    deprecated.daemonset.template.generation: "1"
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"apps/v1","kind":"DaemonSet","metadata":{"annotations":{},"name":"cattle-node-agent","namespace":"cattle-system"},"spec":{"selector":{"matchLabels":{"app":"cattle-agent"}},"template":{"metadata":{"labels":{"app":"cattle-agent"}},"spec":{"affinity":{"nodeAffinity":{"requiredDuringSchedulingIgnoredDuringExecution":{"nodeSelectorTerms":[{"matchExpressions":[{"key":"beta.kubernetes.io/os","operator":"NotIn","values":["windows"]}]}]}}},"containers":[{"env":[{"name":"CATTLE_NODE_NAME","valueFrom":{"fieldRef":{"fieldPath":"spec.nodeName"}}},{"name":"CATTLE_SERVER","value":"https://192.168.4.1:444"},{"name":"CATTLE_CA_CHECKSUM","value":"c54fa59dafbadb2890e635b8ad1c5529f84ea596c459568ceffbeba3543895e8"},{"name":"CATTLE_CLUSTER","value":"false"},{"name":"CATTLE_K8S_MANAGED","value":"true"},{"name":"CATTLE_AGENT_CONNECT","value":"true"}],"image":"rancher/rancher-agent:v2.4.2","imagePullPolicy":"IfNotPresent","name":"agent","securityContext":{"privileged":true},"volumeMounts":[{"mountPath":"/cattle-credentials","name":"cattle-credentials","readOnly":true},{"mountPath":"/etc/kubernetes","name":"k8s-ssl"},{"mountPath":"/var/run","name":"var-run"},{"mountPath":"/run","name":"run"},{"mountPath":"/etc/docker/certs.d","name":"docker-certs"}]}],"hostNetwork":true,"serviceAccountName":"cattle","tolerations":[{"operator":"Exists"}],"volumes":[{"hostPath":{"path":"/etc/kubernetes","type":"DirectoryOrCreate"},"name":"k8s-ssl"},{"hostPath":{"path":"/var/run","type":"DirectoryOrCreate"},"name":"var-run"},{"hostPath":{"path":"/run","type":"DirectoryOrCreate"},"name":"run"},{"name":"cattle-credentials","secret":{"defaultMode":320,"secretName":"cattle-credentials-8e27dab"}},{"hostPath":{"path":"/etc/docker/certs.d","type":"DirectoryOrCreate"},"name":"docker-certs"}]}},"updateStrategy":{"rollingUpdate":{"maxUnavailable":"25%"},"type":"RollingUpdate"}}}
+  creationTimestamp: "2020-04-02T04:34:06Z"
+  name: cattle-node-agent
+  namespace: cattle-system
+spec:
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: cattle-agent
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: cattle-agent
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: beta.kubernetes.io/os
+                operator: NotIn
+                values:
+                - windows
+      containers:
+      - env:
+        - name: CATTLE_NODE_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: spec.nodeName
+        - name: CATTLE_SERVER
+          value: https://192.168.4.1:444
+        - name: CATTLE_CA_CHECKSUM
+          value: c54fa59dafbadb2890e635b8ad1c5529f84ea596c459568ceffbeba3543895e8
+        - name: CATTLE_CLUSTER
+          value: "false"
+        - name: CATTLE_K8S_MANAGED
+          value: "true"
+        - name: CATTLE_AGENT_CONNECT
+          value: "true"
+        image: rancher/rancher-agent:v2.4.2
+        imagePullPolicy: IfNotPresent
+        name: agent
+        resources: {}
+        securityContext:
+          privileged: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /cattle-credentials
+          name: cattle-credentials
+          readOnly: true
+        - mountPath: /etc/kubernetes
+          name: k8s-ssl
+        - mountPath: /var/run
+          name: var-run
+        - mountPath: /run
+          name: run
+        - mountPath: /etc/docker/certs.d
+          name: docker-certs
+      dnsPolicy: ClusterFirst
+      hostNetwork: true
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccount: cattle
+      serviceAccountName: cattle
+      terminationGracePeriodSeconds: 30
+      tolerations:
+      - operator: Exists
+      volumes:
+      - hostPath:
+          path: /etc/kubernetes
+          type: DirectoryOrCreate
+        name: k8s-ssl
+      - hostPath:
+          path: /var/run
+          type: DirectoryOrCreate
+        name: var-run
+      - hostPath:
+          path: /run
+          type: DirectoryOrCreate
+        name: run
+      - name: cattle-credentials
+        secret:
+          defaultMode: 320
+          secretName: cattle-credentials-8e27dab
+      - hostPath:
+          path: /etc/docker/certs.d
+          type: DirectoryOrCreate
+        name: docker-certs
+  updateStrategy:
+    rollingUpdate:
+      maxUnavailable: 25%
+    type: RollingUpdate

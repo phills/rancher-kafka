@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"name":"cattle-cluster-agent","namespace":"cattle-system"},"spec":{"selector":{"matchLabels":{"app":"cattle-cluster-agent"}},"template":{"metadata":{"labels":{"app":"cattle-cluster-agent"}},"spec":{"affinity":{"nodeAffinity":{"preferredDuringSchedulingIgnoredDuringExecution":[{"preference":{"matchExpressions":[{"key":"node-role.kubernetes.io/controlplane","operator":"In","values":["true"]}]},"weight":100},{"preference":{"matchExpressions":[{"key":"node-role.kubernetes.io/etcd","operator":"In","values":["true"]}]},"weight":1}],"requiredDuringSchedulingIgnoredDuringExecution":{"nodeSelectorTerms":[{"matchExpressions":[{"key":"beta.kubernetes.io/os","operator":"NotIn","values":["windows"]}]}]}}},"containers":[{"env":[{"name":"CATTLE_FEATURES","value":"dashboard=true"},{"name":"CATTLE_SERVER","value":"https://192.168.4.1:444"},{"name":"CATTLE_CA_CHECKSUM","value":"c54fa59dafbadb2890e635b8ad1c5529f84ea596c459568ceffbeba3543895e8"},{"name":"CATTLE_CLUSTER","value":"true"},{"name":"CATTLE_K8S_MANAGED","value":"true"}],"image":"rancher/rancher-agent:v2.4.2","imagePullPolicy":"IfNotPresent","name":"cluster-register","volumeMounts":[{"mountPath":"/cattle-credentials","name":"cattle-credentials","readOnly":true}]}],"serviceAccountName":"cattle","tolerations":[{"operator":"Exists"}],"volumes":[{"name":"cattle-credentials","secret":{"defaultMode":320,"secretName":"cattle-credentials-8e27dab"}}]}}}}
+  creationTimestamp: "2020-04-02T04:34:05Z"
+  name: cattle-cluster-agent
+  namespace: cattle-system
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: cattle-cluster-agent
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: cattle-cluster-agent
+    spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - preference:
+              matchExpressions:
+              - key: node-role.kubernetes.io/controlplane
+                operator: In
+                values:
+                - "true"
+            weight: 100
+          - preference:
+              matchExpressions:
+              - key: node-role.kubernetes.io/etcd
+                operator: In
+                values:
+                - "true"
+            weight: 1
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: beta.kubernetes.io/os
+                operator: NotIn
+                values:
+                - windows
+      containers:
+      - env:
+        - name: CATTLE_FEATURES
+          value: dashboard=true
+        - name: CATTLE_SERVER
+          value: https://192.168.4.1:444
+        - name: CATTLE_CA_CHECKSUM
+          value: c54fa59dafbadb2890e635b8ad1c5529f84ea596c459568ceffbeba3543895e8
+        - name: CATTLE_CLUSTER
+          value: "true"
+        - name: CATTLE_K8S_MANAGED
+          value: "true"
+        image: rancher/rancher-agent:v2.4.2
+        imagePullPolicy: IfNotPresent
+        name: cluster-register
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /cattle-credentials
+          name: cattle-credentials
+          readOnly: true
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccount: cattle
+      serviceAccountName: cattle
+      terminationGracePeriodSeconds: 30
+      tolerations:
+      - operator: Exists
+      volumes:
+      - name: cattle-credentials
+        secret:
+          defaultMode: 320
+          secretName: cattle-credentials-8e27dab

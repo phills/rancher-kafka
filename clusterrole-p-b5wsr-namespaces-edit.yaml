@@ -1,0 +1,24 @@
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  annotations:
+    authz.cluster.auth.io/project-namespaces: p-b5wsr-namespaces-edit
+  creationTimestamp: "2020-04-02T04:34:05Z"
+  labels:
+    cattle.io/creator: norman
+  name: p-b5wsr-namespaces-edit
+rules:
+- apiGroups:
+  - ""
+  resourceNames:
+  - security-scan
+  - kube-system
+  - cattle-system
+  - kube-node-lease
+  - kube-public
+  - ingress-nginx
+  - cattle-prometheus
+  resources:
+  - namespaces
+  verbs:
+  - '*'

@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: "2020-04-02T05:58:50Z"
+  labels:
+    app: exporter-kube-scheduler
+    chart: exporter-kube-scheduler-0.0.1
+    component: kube-scheduler
+    heritage: Tiller
+    io.cattle.field/appId: cluster-monitoring
+    release: cluster-monitoring
+  name: expose-kube-scheduler-metrics
+  namespace: cattle-prometheus
+spec:
+  clusterIP: None
+  ports:
+  - name: http-metrics
+    port: 10251
+    protocol: TCP
+    targetPort: 10251
+  sessionAffinity: None
+  type: ClusterIP

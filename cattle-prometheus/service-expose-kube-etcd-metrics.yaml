@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: "2020-04-02T05:58:50Z"
+  labels:
+    app: exporter-kube-etcd
+    chart: exporter-kube-etcd-0.0.1
+    heritage: Tiller
+    io.cattle.field/appId: cluster-monitoring
+    k8s-app: etcd-server
+    release: cluster-monitoring
+  name: expose-kube-etcd-metrics
+  namespace: cattle-prometheus
+spec:
+  clusterIP: None
+  ports:
+  - name: metrics
+    port: 2379
+    protocol: TCP
+    targetPort: 2379
+  sessionAffinity: None
+  type: ClusterIP

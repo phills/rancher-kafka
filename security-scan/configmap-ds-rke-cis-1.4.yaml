@@ -1,0 +1,28 @@
+apiVersion: v1
+data:
+  config.json: '{"1.1.11":"Enabling AlwaysPullImages can use significant bandwidth.","1.1.21":"When
+    generating serving certificates, functionality could break in conjunction with
+    hostname overrides which are required for certain cloud providers.","1.1.24":"Enabling
+    Pod Security Policy can cause applications to unexpectedly fail.","1.1.34":"Enabling
+    encryption changes how data can be recovered as data is encrypted.","1.1.35":"Enabling
+    encryption changes how data can be recovered as data is encrypted.","1.1.36":"EventRateLimit
+    needs to be tuned depending on the cluster.","1.2.2":"Adding this argument prevents
+    Rancher''s monitoring tool to collect metrics on the scheduler.","1.3.7":"Adding
+    this argument prevents Rancher''s monitoring tool to collect metrics on the controller
+    manager.","1.4.12":"A system service account is required for etcd data directory
+    ownership. Refer to Rancher''s hardening guide for more details on how to configure
+    this ownership.","1.7.2":"Enabling Pod Security Policy can cause applications
+    to unexpectedly fail.","1.7.3":"Enabling Pod Security Policy can cause applications
+    to unexpectedly fail.","1.7.4":"Enabling Pod Security Policy can cause applications
+    to unexpectedly fail.","1.7.5":"Enabling Pod Security Policy can cause applications
+    to unexpectedly fail.","2.1.10":"When generating serving certificates, functionality
+    could break in conjunction with hostname overrides which are required for certain
+    cloud providers.","2.1.6":"System level configurations are required prior to provisioning
+    the cluster in order for this argument to be set to true."}'
+kind: ConfigMap
+metadata:
+  creationTimestamp: "2020-04-02T04:34:05Z"
+  labels:
+    cattle.io/creator: norman
+  name: ds-rke-cis-1.4
+  namespace: security-scan

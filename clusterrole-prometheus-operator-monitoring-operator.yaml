@@ -1,0 +1,66 @@
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  creationTimestamp: "2020-04-02T05:58:47Z"
+  labels:
+    app: prometheus-operator
+    chart: prometheus-operator-0.0.2
+    heritage: Tiller
+    io.cattle.field/appId: monitoring-operator
+    release: monitoring-operator
+  name: prometheus-operator-monitoring-operator
+rules:
+- apiGroups:
+  - monitoring.coreos.com
+  resources:
+  - alertmanager
+  - alertmanagers
+  - prometheus
+  - prometheuses
+  - service-monitor
+  - servicemonitors
+  - prometheusrules
+  - prometheuses/finalizers
+  - alertmanagers/finalizers
+  - podmonitors
+  verbs:
+  - '*'
+- apiGroups:
+  - apps
+  resources:
+  - statefulsets
+  verbs:
+  - '*'
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  - secrets
+  verbs:
+  - '*'
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - list
+  - delete
+- apiGroups:
+  - ""
+  resources:
+  - services
+  - services/finalizers
+  - endpoints
+  verbs:
+  - get
+  - create
+  - update
+  - delete
+- apiGroups:
+  - ""
+  resources:
+  - nodes
+  - namespaces
+  verbs:
+  - list
+  - watch

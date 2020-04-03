@@ -1,0 +1,37 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  creationTimestamp: "2020-04-02T05:58:51Z"
+  labels:
+    app: exporter-kube-scheduler
+    chart: exporter-kube-scheduler-0.0.1
+    heritage: Tiller
+    io.cattle.field/appId: cluster-monitoring
+    release: cluster-monitoring
+    source: rancher-monitoring
+  name: exporter-kube-scheduler-cluster-monitoring
+  namespace: cattle-prometheus
+spec:
+  endpoints:
+  - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+    port: http-metrics
+    relabelings:
+    - action: replace
+      regex: (.+)
+      replacement: $1
+      sourceLabels:
+      - __meta_kubernetes_pod_host_ip
+      targetLabel: host_ip
+    - action: replace
+      regex: (.+)
+      replacement: $1
+      sourceLabels:
+      - __meta_kubernetes_pod_node_name
+      targetLabel: node
+    scheme: http
+  namespaceSelector:
+    matchNames:
+    - cattle-prometheus
+  selector:
+    matchLabels:
+      component: kube-scheduler

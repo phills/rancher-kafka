@@ -1,0 +1,32 @@
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  creationTimestamp: "2020-04-02T04:34:05Z"
+  labels:
+    cattle.io/creator: norman
+  name: project-owner-promoted
+rules:
+- apiGroups:
+  - '*'
+  resources:
+  - persistentvolumes
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - '*'
+  resources:
+  - apiservices
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - '*'
+  resources:
+  - storageclasses
+  verbs:
+  - get
+  - list
+  - watch

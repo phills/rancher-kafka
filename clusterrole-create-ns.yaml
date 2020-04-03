@@ -1,0 +1,16 @@
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  annotations:
+    authz.cluster.cattle.io/clusterrole-owner: create-ns
+  creationTimestamp: "2020-04-02T04:34:05Z"
+  labels:
+    cattle.io/creator: norman
+  name: create-ns
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - namespaces
+  verbs:
+  - create

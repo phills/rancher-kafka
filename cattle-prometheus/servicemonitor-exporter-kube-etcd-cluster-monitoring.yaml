@@ -1,0 +1,42 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  creationTimestamp: "2020-04-02T05:58:51Z"
+  labels:
+    app: exporter-kube-etcd
+    chart: exporter-kube-etcd-0.0.1
+    heritage: Tiller
+    io.cattle.field/appId: cluster-monitoring
+    release: cluster-monitoring
+    source: rancher-monitoring
+  name: exporter-kube-etcd-cluster-monitoring
+  namespace: cattle-prometheus
+spec:
+  endpoints:
+  - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+    port: metrics
+    relabelings:
+    - action: replace
+      regex: (.+)
+      replacement: $1
+      sourceLabels:
+      - __meta_kubernetes_pod_host_ip
+      targetLabel: host_ip
+    - action: replace
+      regex: (.+)
+      replacement: $1
+      sourceLabels:
+      - __meta_kubernetes_pod_node_name
+      targetLabel: node
+    scheme: https
+    tlsConfig:
+      caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+      certFile: /etc/prometheus/secrets/exporter-etcd-cert/kube-etcd-192-168-4-1.pem
+      insecureSkipVerify: true
+      keyFile: /etc/prometheus/secrets/exporter-etcd-cert/kube-etcd-192-168-4-1-key.pem
+  namespaceSelector:
+    matchNames:
+    - cattle-prometheus
+  selector:
+    matchLabels:
+      k8s-app: etcd-server

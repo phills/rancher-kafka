@@ -1,0 +1,165 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    cattle.io/timestamp: "2020-04-03T01:01:02Z"
+    field.cattle.io/ports: '[[{"containerPort":5556,"dnsName":"kafka-cp-kafka","hostPort":0,"kind":"ClusterIP","name":"5556tcp02","protocol":"TCP","sourcePort":0}],[{"containerPort":9092,"dnsName":"kafka-cp-kafka","hostPort":0,"kind":"ClusterIP","name":"kafka","protocol":"TCP","sourcePort":0},{"containerPort":5555,"dnsName":"kafka-cp-kafka","hostPort":0,"kind":"ClusterIP","name":"jmx","protocol":"TCP","sourcePort":0}]]'
+    prometheus.io/port: "5556"
+    prometheus.io/scrape: "true"
+  creationTimestamp: "2020-04-03T01:02:57Z"
+  generateName: kafka-cp-kafka-
+  labels:
+    app: cp-kafka
+    controller-revision-hash: kafka-cp-kafka-59dff5fcdf
+    release: kafka
+    statefulset.kubernetes.io/pod-name: kafka-cp-kafka-0
+  name: kafka-cp-kafka-0
+  namespace: kafka
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: StatefulSet
+    name: kafka-cp-kafka
+    uid: 0d8b867e-e64a-4b5e-9bd9-c6428b9849da
+spec:
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+            - key: app
+              operator: In
+              values:
+              - cp-kafka
+            - key: release
+              operator: In
+              values:
+              - kafka
+          topologyKey: kubernetes.io/hostname
+        weight: 1
+  containers:
+  - command:
+    - java
+    - -XX:+UnlockExperimentalVMOptions
+    - -XX:+UseCGroupMemoryLimitForHeap
+    - -XX:MaxRAMFraction=1
+    - -XshowSettings:vm
+    - -jar
+    - jmx_prometheus_httpserver.jar
+    - "5556"
+    - /etc/jmx-kafka/jmx-kafka-prometheus.yml
+    image: solsson/kafka-prometheus-jmx-exporter@sha256:6f82e2b0464f50da8104acd7363fb9b995001ddff77d248379f8788e78946143
+    imagePullPolicy: IfNotPresent
+    name: prometheus-jmx-exporter
+    ports:
+    - containerPort: 5556
+      name: 5556tcp02
+      protocol: TCP
+    resources: {}
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /etc/jmx-kafka
+      name: jmx-config
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: default-token-z6dxk
+      readOnly: true
+  - command:
+    - sh
+    - -exc
+    - |-
+      export KAFKA_BROKER_ID=${HOSTNAME##*-} && \
+      export KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://${POD_NAME}.kafka-cp-kafka-headless.${POD_NAMESPACE}:9092,EXTERNAL://${HOST_IP}:$((31090 + ${KAFKA_BROKER_ID})) && \
+      exec /etc/confluent/docker/run
+    env:
+    - name: CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS
+      value: PLAINTEXT://kafka-cp-kafka-headless:9092
+    - name: KAFKA_HEAP_OPTS
+      value: -Xms512M -Xmx512M
+    - name: KAFKA_JMX_PORT
+      value: "5555"
+    - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
+      value: PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
+    - name: KAFKA_LOG_DIRS
+      value: /opt/kafka/data-0/logs
+    - name: KAFKA_METRIC_REPORTERS
+      value: io.confluent.metrics.reporter.ConfluentMetricsReporter
+    - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
+      value: "3"
+    - name: KAFKA_ZOOKEEPER_CONNECT
+      value: kafka-cp-zookeeper-headless:2181
+    - name: POD_IP
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: status.podIP
+    - name: HOST_IP
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: status.hostIP
+    - name: POD_NAME
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.name
+    - name: POD_NAMESPACE
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.namespace
+    image: confluentinc/cp-enterprise-kafka:latest
+    imagePullPolicy: IfNotPresent
+    name: cp-kafka-broker
+    ports:
+    - containerPort: 9092
+      name: kafka
+      protocol: TCP
+    - containerPort: 5555
+      name: jmx
+      protocol: TCP
+    resources: {}
+    securityContext:
+      capabilities: {}
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /opt/kafka/data-0
+      name: datadir-0
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: default-token-z6dxk
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  hostname: kafka-cp-kafka-0
+  nodeName: zx
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: default
+  serviceAccountName: default
+  subdomain: kafka-cp-kafka-headless
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  volumes:
+  - emptyDir: {}
+    name: datadir-0
+  - configMap:
+      defaultMode: 420
+      name: kafka-cp-kafka-jmx-configmap
+    name: jmx-config
+  - name: default-token-z6dxk
+    secret:
+      defaultMode: 420
+      secretName: default-token-z6dxk

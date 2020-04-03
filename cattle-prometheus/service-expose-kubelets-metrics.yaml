@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: "2020-04-02T05:58:47Z"
+  labels:
+    k8s-app: kubelet
+    monitoring.coreos.com: "true"
+  name: expose-kubelets-metrics
+  namespace: cattle-prometheus
+spec:
+  clusterIP: None
+  ports:
+  - name: https-metrics
+    port: 10250
+    protocol: TCP
+    targetPort: 10250
+  sessionAffinity: None
+  type: ClusterIP

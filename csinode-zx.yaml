@@ -1,0 +1,12 @@
+apiVersion: storage.k8s.io/v1beta1
+kind: CSINode
+metadata:
+  creationTimestamp: "2020-04-02T04:33:27Z"
+  name: zx
+  ownerReferences:
+  - apiVersion: v1
+    kind: Node
+    name: zx
+    uid: 431de924-dbfc-4d1f-8131-0c2122309cfe
+spec:
+  drivers: null

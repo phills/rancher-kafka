@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  annotations:
+    deprecated.daemonset.template.generation: "1"
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"apps/v1","kind":"DaemonSet","metadata":{"annotations":{},"name":"kube-api-auth","namespace":"cattle-system"},"spec":{"selector":{"matchLabels":{"app":"kube-api-auth"}},"template":{"metadata":{"labels":{"app":"kube-api-auth"}},"spec":{"affinity":{"nodeAffinity":{"requiredDuringSchedulingIgnoredDuringExecution":{"nodeSelectorTerms":[{"matchExpressions":[{"key":"beta.kubernetes.io/os","operator":"NotIn","values":["windows"]},{"key":"node-role.kubernetes.io/controlplane","operator":"In","values":["true"]}]}]}}},"containers":[{"image":"rancher/kube-api-auth:v0.1.4","imagePullPolicy":"IfNotPresent","name":"kube-api-auth","securityContext":{"privileged":true},"volumeMounts":[{"mountPath":"/etc/kubernetes","name":"k8s-ssl"}]}],"hostNetwork":true,"serviceAccountName":"cattle","tolerations":[{"operator":"Exists"}],"volumes":[{"hostPath":{"path":"/etc/kubernetes","type":"DirectoryOrCreate"},"name":"k8s-ssl"}]}},"updateStrategy":{"rollingUpdate":{"maxUnavailable":"25%"},"type":"RollingUpdate"}}}
+  creationTimestamp: "2020-04-02T04:34:06Z"
+  name: kube-api-auth
+  namespace: cattle-system
+spec:
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: kube-api-auth
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: kube-api-auth
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: beta.kubernetes.io/os
+                operator: NotIn
+                values:
+                - windows
+              - key: node-role.kubernetes.io/controlplane
+                operator: In
+                values:
+                - "true"
+      containers:
+      - image: rancher/kube-api-auth:v0.1.4
+        imagePullPolicy: IfNotPresent
+        name: kube-api-auth
+        resources: {}
+        securityContext:
+          privileged: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /etc/kubernetes
+          name: k8s-ssl
+      dnsPolicy: ClusterFirst
+      hostNetwork: true
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccount: cattle
+      serviceAccountName: cattle
+      terminationGracePeriodSeconds: 30
+      tolerations:
+      - operator: Exists
+      volumes:
+      - hostPath:
+          path: /etc/kubernetes
+          type: DirectoryOrCreate
+        name: k8s-ssl
+  updateStrategy:
+    rollingUpdate:
+      maxUnavailable: 25%
+    type: RollingUpdate

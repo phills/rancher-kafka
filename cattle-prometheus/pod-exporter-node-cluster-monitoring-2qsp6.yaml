@@ -1,0 +1,166 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: "2020-04-02T05:58:50Z"
+  generateName: exporter-node-cluster-monitoring-
+  labels:
+    app: exporter-node
+    chart: exporter-node-0.0.1
+    controller-revision-hash: 6855f69f67
+    pod-template-generation: "1"
+    release: cluster-monitoring
+  name: exporter-node-cluster-monitoring-2qsp6
+  namespace: cattle-prometheus
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: DaemonSet
+    name: exporter-node-cluster-monitoring
+    uid: 16e408ee-d08f-47c0-aede-f42d898c0a87
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchFields:
+          - key: metadata.name
+            operator: In
+            values:
+            - zx
+  containers:
+  - args:
+    - --web.listen-address=0.0.0.0:9796
+    - --path.procfs=/host/proc
+    - --path.sysfs=/host/sys
+    - --path.rootfs=/host
+    - --collector.arp
+    - --collector.bcache
+    - --collector.bonding
+    - --no-collector.buddyinfo
+    - --collector.conntrack
+    - --collector.cpu
+    - --collector.diskstats
+    - --no-collector.drbd
+    - --collector.edac
+    - --collector.entropy
+    - --collector.filefd
+    - --collector.filesystem
+    - --collector.hwmon
+    - --collector.infiniband
+    - --no-collector.interrupts
+    - --collector.ipvs
+    - --no-collector.ksmd
+    - --collector.loadavg
+    - --no-collector.logind
+    - --collector.mdadm
+    - --collector.meminfo
+    - --no-collector.meminfo_numa
+    - --no-collector.mountstats
+    - --collector.netdev
+    - --collector.netstat
+    - --collector.nfs
+    - --collector.nfsd
+    - --no-collector.ntp
+    - --no-collector.processes
+    - --no-collector.qdisc
+    - --no-collector.runit
+    - --collector.sockstat
+    - --collector.stat
+    - --no-collector.supervisord
+    - --no-collector.systemd
+    - --no-collector.tcpstat
+    - --collector.textfile
+    - --collector.time
+    - --collector.timex
+    - --collector.uname
+    - --collector.vmstat
+    - --no-collector.wifi
+    - --collector.xfs
+    - --collector.zfs
+    image: rancher/prom-node-exporter:v0.17.0
+    imagePullPolicy: IfNotPresent
+    name: exporter-node
+    ports:
+    - containerPort: 9796
+      hostPort: 9796
+      name: http
+      protocol: TCP
+    resources:
+      limits:
+        cpu: 200m
+        memory: 200Mi
+      requests:
+        cpu: 100m
+        memory: 30Mi
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /host/proc
+      name: proc
+      readOnly: true
+    - mountPath: /host/sys
+      name: sys
+      readOnly: true
+    - mountPath: /host
+      name: host
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: exporter-node-cluster-monitoring-token-ds7f4
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  hostNetwork: true
+  hostPID: true
+  nodeName: zx
+  nodeSelector:
+    kubernetes.io/os: linux
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 65534
+  serviceAccount: exporter-node-cluster-monitoring
+  serviceAccountName: exporter-node-cluster-monitoring
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - operator: Exists
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+  - effect: NoSchedule
+    key: node.kubernetes.io/disk-pressure
+    operator: Exists
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  - effect: NoSchedule
+    key: node.kubernetes.io/pid-pressure
+    operator: Exists
+  - effect: NoSchedule
+    key: node.kubernetes.io/unschedulable
+    operator: Exists
+  - effect: NoSchedule
+    key: node.kubernetes.io/network-unavailable
+    operator: Exists
+  volumes:
+  - hostPath:
+      path: /proc
+      type: ""
+    name: proc
+  - hostPath:
+      path: /sys
+      type: ""
+    name: sys
+  - hostPath:
+      path: /
+      type: ""
+    name: host
+  - name: exporter-node-cluster-monitoring-token-ds7f4
+    secret:
+      defaultMode: 420
+      secretName: exporter-node-cluster-monitoring-token-ds7f4

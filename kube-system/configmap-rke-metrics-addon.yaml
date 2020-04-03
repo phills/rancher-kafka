@@ -1,0 +1,46 @@
+apiVersion: v1
+data:
+  rke-metrics-addon: "\n---\napiVersion: rbac.authorization.k8s.io/v1beta1\nkind:
+    ClusterRoleBinding\nmetadata:\n  name: metrics-server:system:auth-delegator\nroleRef:\n
+    \ apiGroup: rbac.authorization.k8s.io\n  kind: ClusterRole\n  name: system:auth-delegator\nsubjects:\n-
+    kind: ServiceAccount\n  name: metrics-server\n  namespace: kube-system\n---\napiVersion:
+    rbac.authorization.k8s.io/v1beta1\nkind: RoleBinding\nmetadata:\n  name: metrics-server-auth-reader\n
+    \ namespace: kube-system\nroleRef:\n  apiGroup: rbac.authorization.k8s.io\n  kind:
+    Role\n  name: extension-apiserver-authentication-reader\nsubjects:\n- kind: ServiceAccount\n
+    \ name: metrics-server\n  namespace: kube-system\n---\napiVersion: rbac.authorization.k8s.io/v1\nkind:
+    ClusterRole\nmetadata:\n  name: system:metrics-server\nrules:\n- apiGroups:\n
+    \ - \"\"\n  resources:\n  - pods\n  - nodes\n  - nodes/stats\n  - namespaces\n
+    \ verbs:\n  - get\n  - list\n  - watch\n- apiGroups:\n  - \"extensions\"\n  resources:\n
+    \ - deployments\n  verbs:\n  - get\n  - list\n  - watch\n---\napiVersion: rbac.authorization.k8s.io/v1\nkind:
+    ClusterRoleBinding\nmetadata:\n  name: system:metrics-server\nroleRef:\n  apiGroup:
+    rbac.authorization.k8s.io\n  kind: ClusterRole\n  name: system:metrics-server\nsubjects:\n-
+    kind: ServiceAccount\n  name: metrics-server\n  namespace: kube-system\n---\napiVersion:
+    apiregistration.k8s.io/v1beta1\nkind: APIService\nmetadata:\n  name: v1beta1.metrics.k8s.io\nspec:\n
+    \ service:\n    name: metrics-server\n    namespace: kube-system\n  group: metrics.k8s.io\n
+    \ version: v1beta1\n  insecureSkipTLSVerify: true\n  groupPriorityMinimum: 100\n
+    \ versionPriority: 100\n---\napiVersion: v1\nkind: ServiceAccount\nmetadata:\n
+    \ name: metrics-server\n  namespace: kube-system\n---\napiVersion: apps/v1\nkind:
+    Deployment\nmetadata:\n  name: metrics-server\n  namespace: kube-system\n  labels:\n
+    \   k8s-app: metrics-server\nspec:\n\n  replicas: 1\n\n  selector:\n    matchLabels:\n
+    \     k8s-app: metrics-server\n\n  strategy:\n    rollingUpdate:\n      maxSurge:
+    25%\n      maxUnavailable: 25%\n    type: RollingUpdate\n\n  template:\n    metadata:\n
+    \     name: metrics-server\n      labels:\n        k8s-app: metrics-server\n    spec:\n
+    \     affinity:\n        nodeAffinity:\n          requiredDuringSchedulingIgnoredDuringExecution:\n
+    \           nodeSelectorTerms:\n              - matchExpressions:\n                -
+    key: beta.kubernetes.io/os\n                  operator: NotIn\n                  values:\n
+    \                   - windows\n                - key: node-role.kubernetes.io/worker\n
+    \                 operator: Exists\n\n      serviceAccountName: metrics-server\n
+    \     tolerations:\n      - effect: NoExecute\n        operator: Exists\n      -
+    effect: NoSchedule\n        operator: Exists\n      containers:\n      - name:
+    metrics-server\n        image: rancher/metrics-server:v0.3.6\n        imagePullPolicy:
+    Always\n        command:\n        - /metrics-server\n        - --kubelet-insecure-tls\n
+    \       - --kubelet-preferred-address-types=InternalIP\n        - --logtostderr\n
+    \       \n---\napiVersion: v1\nkind: Service\nmetadata:\n  name: metrics-server\n
+    \ namespace: kube-system\n  labels:\n    kubernetes.io/name: \"Metrics-server\"\nspec:\n
+    \ selector:\n    k8s-app: metrics-server\n  ports:\n  - port: 443\n    protocol:
+    TCP\n    targetPort: 443\n"
+kind: ConfigMap
+metadata:
+  creationTimestamp: "2020-04-02T04:33:47Z"
+  name: rke-metrics-addon
+  namespace: kube-system

@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    field.cattle.io/publicEndpoints: '[{"addresses":["192.168.4.1"],"port":31000,"protocol":"TCP","serviceName":"kafka:kafka-cp-control-center","allNodes":true}]'
+  creationTimestamp: "2020-04-03T00:47:25Z"
+  labels:
+    app: cp-control-center
+    chart: cp-control-center-0.1.0
+    heritage: Tiller
+    io.cattle.field/appId: kafka
+    release: kafka
+  name: kafka-cp-control-center
+  namespace: kafka
+spec:
+  clusterIP: 10.43.232.133
+  externalTrafficPolicy: Cluster
+  ports:
+  - name: cc-http
+    nodePort: 31000
+    port: 9021
+    protocol: TCP
+    targetPort: 9021
+  selector:
+    app: cp-control-center
+    release: kafka
+  sessionAffinity: None
+  type: NodePort

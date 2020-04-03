@@ -1,0 +1,99 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    cattle.io/timestamp: "2020-04-03T01:42:11Z"
+    field.cattle.io/ports: '[[{"containerPort":8080,"dnsName":"katafygio","hostPort":0,"kind":"ClusterIP","name":"http","protocol":"TCP","sourcePort":18080}]]'
+  creationTimestamp: "2020-04-03T01:43:43Z"
+  generateName: katafygio-85bcc68489-
+  labels:
+    app: katafygio
+    chart: katafygio-1.0.0
+    heritage: Tiller
+    pod-template-hash: 85bcc68489
+    release: katafygio
+  name: katafygio-85bcc68489-ng9q2
+  namespace: katafygio
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: katafygio-85bcc68489
+    uid: f07150dd-1039-408b-8f69-489ccb4e7876
+spec:
+  containers:
+  - command:
+    - /usr/bin/katafygio
+    - --local-dir=/var/lib/katafygio/data
+    - --healthcheck-port=8080
+    - --log-level=warning
+    - --log-output=stdout
+    - --resync-interval=300
+    - --exclude-kind=replicaset
+    - --exclude-kind=endpoints
+    - --exclude-kind=event
+    image: bpineau/katafygio:v0.8.1
+    imagePullPolicy: IfNotPresent
+    livenessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /health
+        port: http
+        scheme: HTTP
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 1
+    name: katafygio
+    ports:
+    - containerPort: 8080
+      name: http
+      protocol: TCP
+    readinessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /health
+        port: http
+        scheme: HTTP
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 1
+    resources: {}
+    securityContext:
+      capabilities: {}
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/lib/katafygio/data
+      name: vol1
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: katafygio-token-zm5lj
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  nodeName: zx
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: katafygio
+  serviceAccountName: katafygio
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  volumes:
+  - hostPath:
+      path: /mnt/k8/katafygio
+      type: ""
+    name: vol1
+  - name: katafygio-token-zm5lj
+    secret:
+      defaultMode: 420
+      secretName: katafygio-token-zm5lj

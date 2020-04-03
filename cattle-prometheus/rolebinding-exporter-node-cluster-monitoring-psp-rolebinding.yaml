@@ -1,0 +1,16 @@
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: RoleBinding
+metadata:
+  creationTimestamp: "2020-04-02T05:58:50Z"
+  labels:
+    io.cattle.field/appId: cluster-monitoring
+  name: exporter-node-cluster-monitoring-psp-rolebinding
+  namespace: cattle-prometheus
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: exporter-node-cluster-monitoring-psp-role
+subjects:
+- kind: ServiceAccount
+  name: exporter-node-cluster-monitoring
+  namespace: cattle-prometheus

@@ -1,0 +1,18 @@
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: RoleBinding
+metadata:
+  creationTimestamp: "2020-04-02T04:34:05Z"
+  generateName: clusterrolebinding-
+  labels:
+    authz.cluster.cattle.io/rtb-owner: 906d70d3-90d0-402c-bbc2-9167eeb0b47a
+    cattle.io/creator: norman
+  name: clusterrolebinding-rwrw5
+  namespace: cattle-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: project-member
+subjects:
+- apiGroup: rbac.authorization.k8s.io
+  kind: User
+  name: u-7ai66dslzf

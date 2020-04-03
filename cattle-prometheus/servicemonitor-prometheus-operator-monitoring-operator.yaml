@@ -1,0 +1,39 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  creationTimestamp: "2020-04-02T05:58:47Z"
+  labels:
+    app: prometheus-operator
+    chart: prometheus-operator-0.0.2
+    heritage: Tiller
+    io.cattle.field/appId: monitoring-operator
+    release: monitoring-operator
+    source: rancher-monitoring
+  name: prometheus-operator-monitoring-operator
+  namespace: cattle-prometheus
+spec:
+  endpoints:
+  - honorLabels: true
+    port: metrics
+    relabelings:
+    - action: replace
+      regex: (.+)
+      replacement: $1
+      sourceLabels:
+      - __meta_kubernetes_pod_host_ip
+      targetLabel: host_ip
+    - action: replace
+      regex: (.+)
+      replacement: $1
+      sourceLabels:
+      - __meta_kubernetes_pod_node_name
+      targetLabel: node
+  namespaceSelector:
+    matchNames:
+    - cattle-prometheus
+  selector:
+    matchLabels:
+      app: prometheus-operator
+      chart: prometheus-operator-0.0.2
+      monitoring.coreos.com: "true"
+      release: monitoring-operator

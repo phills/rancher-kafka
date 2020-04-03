@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: "2020-04-03T00:47:25Z"
+  labels:
+    app: cp-ksql-server
+    chart: cp-ksql-server-0.1.0
+    heritage: Tiller
+    io.cattle.field/appId: kafka
+    release: kafka
+  name: kafka-cp-ksql-server
+  namespace: kafka
+spec:
+  clusterIP: 10.43.89.252
+  ports:
+  - name: ksql-server
+    port: 8088
+    protocol: TCP
+    targetPort: 8088
+  selector:
+    app: cp-ksql-server
+    release: kafka
+  sessionAffinity: None
+  type: ClusterIP

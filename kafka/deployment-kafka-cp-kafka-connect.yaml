@@ -1,0 +1,132 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "2"
+  creationTimestamp: "2020-04-03T00:47:25Z"
+  labels:
+    app: cp-kafka-connect
+    chart: cp-kafka-connect-0.1.0
+    heritage: Tiller
+    io.cattle.field/appId: kafka
+    release: kafka
+  name: kafka-cp-kafka-connect
+  namespace: kafka
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: cp-kafka-connect
+      release: kafka
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        cattle.io/timestamp: "2020-04-03T00:50:39Z"
+        field.cattle.io/ports: '[[{"containerPort":5556,"dnsName":"kafka-cp-kafka-connect","hostPort":0,"kind":"ClusterIP","name":"5556tcp02","protocol":"TCP","sourcePort":0}],[{"containerPort":8083,"dnsName":"kafka-cp-kafka-connect","hostPort":0,"kind":"ClusterIP","name":"kafka-connect","protocol":"TCP","sourcePort":0},{"containerPort":5555,"dnsName":"kafka-cp-kafka-connect","hostPort":0,"kind":"ClusterIP","name":"jmx","protocol":"TCP","sourcePort":0}]]'
+        prometheus.io/port: "5556"
+        prometheus.io/scrape: "true"
+      creationTimestamp: null
+      labels:
+        app: cp-kafka-connect
+        release: kafka
+    spec:
+      containers:
+      - command:
+        - java
+        - -XX:+UnlockExperimentalVMOptions
+        - -XX:+UseCGroupMemoryLimitForHeap
+        - -XX:MaxRAMFraction=1
+        - -XshowSettings:vm
+        - -jar
+        - jmx_prometheus_httpserver.jar
+        - "5556"
+        - /etc/jmx-kafka-connect/jmx-kafka-connect-prometheus.yml
+        image: solsson/kafka-prometheus-jmx-exporter@sha256:6f82e2b0464f50da8104acd7363fb9b995001ddff77d248379f8788e78946143
+        imagePullPolicy: IfNotPresent
+        name: prometheus-jmx-exporter
+        ports:
+        - containerPort: 5556
+          name: 5556tcp02
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /etc/jmx-kafka-connect
+          name: jmx-config
+      - env:
+        - name: CONNECT_BOOTSTRAP_SERVERS
+          value: PLAINTEXT://kafka-cp-kafka-headless:9092
+        - name: CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR
+          value: "3"
+        - name: CONNECT_CONFIG_STORAGE_TOPIC
+          value: kafka-cp-kafka-connect-config
+        - name: CONNECT_GROUP_ID
+          value: kafka
+        - name: CONNECT_INTERNAL_KEY_CONVERTER
+          value: org.apache.kafka.connect.json.JsonConverter
+        - name: CONNECT_INTERNAL_VALUE_CONVERTER
+          value: org.apache.kafka.connect.json.JsonConverter
+        - name: CONNECT_KEY_CONVERTER
+          value: io.confluent.connect.avro.AvroConverter
+        - name: CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE
+          value: "false"
+        - name: CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL
+          value: http://kafka-cp-schema-registry:8081
+        - name: CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR
+          value: "3"
+        - name: CONNECT_OFFSET_STORAGE_TOPIC
+          value: kafka-cp-kafka-connect-offset
+        - name: CONNECT_PLUGIN_PATH
+          value: /usr/share/java
+        - name: CONNECT_STATUS_STORAGE_REPLICATION_FACTOR
+          value: "3"
+        - name: CONNECT_STATUS_STORAGE_TOPIC
+          value: kafka-cp-kafka-connect-status
+        - name: CONNECT_VALUE_CONVERTER
+          value: io.confluent.connect.avro.AvroConverter
+        - name: CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE
+          value: "false"
+        - name: CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL
+          value: http://kafka-cp-schema-registry:8081
+        - name: KAFKA_HEAP_OPTS
+          value: -Xms512M -Xmx512M
+        - name: KAFKA_JMX_PORT
+          value: "5555"
+        - name: CONNECT_REST_ADVERTISED_HOST_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.podIP
+        image: confluentinc/cp-kafka-connect:latest
+        imagePullPolicy: IfNotPresent
+        name: cp-kafka-connect-server
+        ports:
+        - containerPort: 8083
+          name: kafka-connect
+          protocol: TCP
+        - containerPort: 5555
+          name: jmx
+          protocol: TCP
+        resources: {}
+        securityContext:
+          capabilities: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - configMap:
+          defaultMode: 420
+          name: kafka-cp-kafka-connect-jmx-configmap
+        name: jmx-config

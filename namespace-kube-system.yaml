@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    cattle.io/status: '{"Conditions":[{"Type":"ResourceQuotaInit","Status":"True","Message":"","LastUpdateTime":"2020-04-02T04:34:06Z"},{"Type":"InitialRolesPopulated","Status":"True","Message":"","LastUpdateTime":"2020-04-02T04:34:11Z"}]}'
+    field.cattle.io/projectId: c-k9rzx:p-b5wsr
+    lifecycle.cattle.io/create.namespace-auth: "true"
+  creationTimestamp: "2020-04-02T04:32:51Z"
+  finalizers:
+  - controller.cattle.io/namespace-auth
+  labels:
+    field.cattle.io/projectId: p-b5wsr
+  name: kube-system
+spec:
+  finalizers:
+  - kubernetes

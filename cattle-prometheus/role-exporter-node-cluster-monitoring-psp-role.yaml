@@ -1,0 +1,18 @@
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: Role
+metadata:
+  creationTimestamp: "2020-04-02T05:58:50Z"
+  labels:
+    io.cattle.field/appId: cluster-monitoring
+  name: exporter-node-cluster-monitoring-psp-role
+  namespace: cattle-prometheus
+rules:
+- apiGroups:
+  - extensions
+  - policy
+  resourceNames:
+  - exporter-node-cluster-monitoring
+  resources:
+  - podsecuritypolicies
+  verbs:
+  - use

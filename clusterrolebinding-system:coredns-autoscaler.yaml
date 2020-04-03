@@ -1,0 +1,16 @@
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"rbac.authorization.k8s.io/v1","kind":"ClusterRoleBinding","metadata":{"annotations":{},"name":"system:coredns-autoscaler"},"roleRef":{"apiGroup":"rbac.authorization.k8s.io","kind":"ClusterRole","name":"system:coredns-autoscaler"},"subjects":[{"kind":"ServiceAccount","name":"coredns-autoscaler","namespace":"kube-system"}]}
+  creationTimestamp: "2020-04-02T04:33:43Z"
+  name: system:coredns-autoscaler
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:coredns-autoscaler
+subjects:
+- kind: ServiceAccount
+  name: coredns-autoscaler
+  namespace: kube-system

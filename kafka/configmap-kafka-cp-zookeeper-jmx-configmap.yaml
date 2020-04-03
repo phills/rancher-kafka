@@ -1,0 +1,35 @@
+apiVersion: v1
+data:
+  jmx-zookeeper-prometheus.yml: |
+    jmxUrl: service:jmx:rmi:///jndi/rmi://localhost:5555/jmxrmi
+    lowercaseOutputName: true
+    lowercaseOutputLabelNames: true
+    ssl: false
+    rules:
+    - pattern: "org.apache.ZooKeeperService<name0=ReplicatedServer_id(\\d+)><>(\\w+)"
+      name: "cp_zookeeper_$2"
+    - pattern: "org.apache.ZooKeeperService<name0=ReplicatedServer_id(\\d+), name1=replica.(\\d+)><>(\\w+)"
+      name: "cp_zookeeper_$3"
+      labels:
+        replicaId: "$2"
+    - pattern: "org.apache.ZooKeeperService<name0=ReplicatedServer_id(\\d+), name1=replica.(\\d+), name2=(\\w+)><>(\\w+)"
+      name: "cp_zookeeper_$4"
+      labels:
+        replicaId: "$2"
+        memberType: "$3"
+    - pattern: "org.apache.ZooKeeperService<name0=ReplicatedServer_id(\\d+), name1=replica.(\\d+), name2=(\\w+), name3=(\\w+)><>(\\w+)"
+      name: "cp_zookeeper_$4_$5"
+      labels:
+        replicaId: "$2"
+        memberType: "$3"
+kind: ConfigMap
+metadata:
+  creationTimestamp: "2020-04-03T00:47:25Z"
+  labels:
+    app: cp-zookeeper
+    chart: cp-zookeeper-0.1.0
+    heritage: Tiller
+    io.cattle.field/appId: kafka
+    release: kafka
+  name: kafka-cp-zookeeper-jmx-configmap
+  namespace: kafka

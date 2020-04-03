@@ -1,0 +1,65 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: "2020-04-02T04:33:48Z"
+  generateName: metrics-server-6b55c64f86-
+  labels:
+    k8s-app: metrics-server
+    pod-template-hash: 6b55c64f86
+  name: metrics-server-6b55c64f86-zblhr
+  namespace: kube-system
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: metrics-server-6b55c64f86
+    uid: df38bfd5-bc45-466f-9db0-6e0c3838e99e
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: beta.kubernetes.io/os
+            operator: NotIn
+            values:
+            - windows
+          - key: node-role.kubernetes.io/worker
+            operator: Exists
+  containers:
+  - command:
+    - /metrics-server
+    - --kubelet-insecure-tls
+    - --kubelet-preferred-address-types=InternalIP
+    - --logtostderr
+    image: rancher/metrics-server:v0.3.6
+    imagePullPolicy: Always
+    name: metrics-server
+    resources: {}
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: metrics-server-token-zns7v
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  nodeName: zx
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: metrics-server
+  serviceAccountName: metrics-server
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    operator: Exists
+  - effect: NoSchedule
+    operator: Exists
+  volumes:
+  - name: metrics-server-token-zns7v
+    secret:
+      defaultMode: 420
+      secretName: metrics-server-token-zns7v

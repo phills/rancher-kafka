@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: "2020-04-03T00:47:25Z"
+  labels:
+    app: cp-zookeeper
+    chart: cp-zookeeper-0.1.0
+    heritage: Tiller
+    io.cattle.field/appId: kafka
+    release: kafka
+  name: kafka-cp-zookeeper-headless
+  namespace: kafka
+spec:
+  clusterIP: None
+  ports:
+  - name: server
+    port: 2888
+    protocol: TCP
+    targetPort: 2888
+  - name: leader-election
+    port: 3888
+    protocol: TCP
+    targetPort: 3888
+  selector:
+    app: cp-zookeeper
+    release: kafka
+  sessionAffinity: None
+  type: ClusterIP

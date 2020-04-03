@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    cattle.io/appIds: cluster-monitoring,monitoring-operator
+    cattle.io/status: '{"Conditions":[{"Type":"ResourceQuotaInit","Status":"True","Message":"","LastUpdateTime":"2020-04-02T05:58:47Z"},{"Type":"InitialRolesPopulated","Status":"True","Message":"","LastUpdateTime":"2020-04-02T05:58:52Z"}]}'
+    field.cattle.io/creatorId: u-m53fsby3f5
+    field.cattle.io/projectId: c-k9rzx:p-b5wsr
+    lifecycle.cattle.io/create.namespace-auth: "true"
+  creationTimestamp: "2020-04-02T05:58:46Z"
+  finalizers:
+  - controller.cattle.io/namespace-auth
+  labels:
+    cattle.io/creator: norman
+    field.cattle.io/projectId: p-b5wsr
+  name: cattle-prometheus
+spec:
+  finalizers:
+  - kubernetes

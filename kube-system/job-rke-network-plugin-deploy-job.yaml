@@ -1,0 +1,67 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  creationTimestamp: "2020-04-02T04:33:37Z"
+  labels:
+    controller-uid: 7aab7f18-7753-403a-bf07-bd18ea3ac40b
+    job-name: rke-network-plugin-deploy-job
+  name: rke-network-plugin-deploy-job
+  namespace: kube-system
+spec:
+  backoffLimit: 10
+  completions: 1
+  parallelism: 1
+  selector:
+    matchLabels:
+      controller-uid: 7aab7f18-7753-403a-bf07-bd18ea3ac40b
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        controller-uid: 7aab7f18-7753-403a-bf07-bd18ea3ac40b
+        job-name: rke-network-plugin-deploy-job
+      name: rke-deploy
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: beta.kubernetes.io/os
+                operator: NotIn
+                values:
+                - windows
+      containers:
+      - command:
+        - kubectl
+        - apply
+        - -f
+        - /etc/config/rke-network-plugin.yaml
+        image: rancher/hyperkube:v1.17.4-rancher1
+        imagePullPolicy: IfNotPresent
+        name: rke-network-plugin-pod
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /etc/config
+          name: config-volume
+      dnsPolicy: ClusterFirst
+      hostNetwork: true
+      nodeName: zx
+      restartPolicy: Never
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccount: rke-job-deployer
+      serviceAccountName: rke-job-deployer
+      terminationGracePeriodSeconds: 30
+      tolerations:
+      - operator: Exists
+      volumes:
+      - configMap:
+          defaultMode: 420
+          items:
+          - key: rke-network-plugin
+            path: rke-network-plugin.yaml
+          name: rke-network-plugin
+        name: config-volume

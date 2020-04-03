@@ -1,0 +1,86 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: "2020-04-02T04:34:06Z"
+  generateName: kube-api-auth-
+  labels:
+    app: kube-api-auth
+    controller-revision-hash: 969b449d5
+    pod-template-generation: "1"
+  name: kube-api-auth-sjfp6
+  namespace: cattle-system
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: DaemonSet
+    name: kube-api-auth
+    uid: 990801ef-2416-4b90-a2cb-b675649d7da2
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchFields:
+          - key: metadata.name
+            operator: In
+            values:
+            - zx
+  containers:
+  - image: rancher/kube-api-auth:v0.1.4
+    imagePullPolicy: IfNotPresent
+    name: kube-api-auth
+    resources: {}
+    securityContext:
+      privileged: true
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /etc/kubernetes
+      name: k8s-ssl
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: cattle-token-n9x59
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  hostNetwork: true
+  nodeName: zx
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: cattle
+  serviceAccountName: cattle
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - operator: Exists
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+  - effect: NoSchedule
+    key: node.kubernetes.io/disk-pressure
+    operator: Exists
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  - effect: NoSchedule
+    key: node.kubernetes.io/pid-pressure
+    operator: Exists
+  - effect: NoSchedule
+    key: node.kubernetes.io/unschedulable
+    operator: Exists
+  - effect: NoSchedule
+    key: node.kubernetes.io/network-unavailable
+    operator: Exists
+  volumes:
+  - hostPath:
+      path: /etc/kubernetes
+      type: DirectoryOrCreate
+    name: k8s-ssl
+  - name: cattle-token-n9x59
+    secret:
+      defaultMode: 420
+      secretName: cattle-token-n9x59
