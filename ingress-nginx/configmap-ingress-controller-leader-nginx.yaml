@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   annotations:
-    control-plane.alpha.kubernetes.io/leader: '{"holderIdentity":"nginx-ingress-controller-clwwb","leaseDurationSeconds":30,"acquireTime":"2020-04-02T05:18:37Z","renewTime":"2020-04-03T02:12:52Z","leaderTransitions":0}'
+    control-plane.alpha.kubernetes.io/leader: '{"holderIdentity":"nginx-ingress-controller-clwwb","leaseDurationSeconds":30,"acquireTime":"2020-04-02T05:18:37Z","renewTime":"2020-04-03T02:13:00Z","leaderTransitions":0}'
   creationTimestamp: "2020-04-02T05:18:37Z"
   name: ingress-controller-leader-nginx
   namespace: ingress-nginx
